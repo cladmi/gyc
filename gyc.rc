@@ -1,0 +1,47 @@
+# git@github.com:cladmi/gyc.git
+
+GYC_WORK_TREE='/'
+GYC_GIT_DIR="${HOME}/.gyc/git_bare"
+
+TEST=true
+
+alias gyc="git --git-dir=${GYC_GIT_DIR} --work-tree=${GYC_WORK_TREE}"
+
+function create_gyc_repository() {
+    echo "Create gyc repository with
+        root_dir = '${GYC_WORK_TREE}'
+        git_dir  = '${GYC_GIT_DIR}'"
+
+    mkdir -p $(dirname ${GYC_GIT_DIR})
+
+    if [ -e ${GYC_GIT_DIR} ]; then
+        echo "${GYC_GIT_DIR} allready exist"
+        ${TEST} || exit 0
+    fi
+
+    __setup_gyc_repository
+
+}
+
+function __setup_gyc_repository() {
+
+    EXCL=${GYC_GIT_DIR}/info/exclude
+    grep -q '^\*$' $EXCL 2> /dev/null
+    if [ $? -ne 0 ]; then
+        echo "pattern not found"
+        echo '# Exclude all files by default, to add files, use "-f"' >> $EXCL
+        echo '*' >> $EXCL
+    else
+        echo "pattern found"
+    fi
+
+
+    gyc init
+    gyc checkout -b ${HOSTNAME}
+
+    # alias to add files as by default all files are excluded
+    gyc config alias.fadd 'add -f'
+
+
+
+}
