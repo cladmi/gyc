@@ -1,0 +1,43 @@
+#!/bin/sh
+
+# detect if commited files may contain a password
+
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+	against=HEAD
+else
+	# Initial commit: diff against an empty tree object
+	against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+# Redirect output to stderr.
+exec 1>&2
+
+# detect if files may contain a password
+WARNING_PATTERN='[Pp][Aa][Ss][Ss](|[Ww](|[Oo][Rr])[Dd])'
+files_adding_wrong_pattern=$(git diff-index -G"$WARNING_PATTERN" --exit-code --name-only --cached $against --)
+ret=$?
+
+if [ $ret != 0 ]; then
+    echo "WARNING:"
+    echo "Following files match case insensitive 'pass|passwd|password':"
+    echo
+
+    for file in "$files_adding_wrong_pattern"; do
+        echo $file
+        grep -n -E $WARNING_PATTERN "$file"
+    done
+
+    echo
+    echo "Added files may contain a cleartext password"
+    echo
+    echo "Protection can be bypassed by adding"
+    echo "    --no-verify    option to commit"
+    echo
+    echo "I don't know how to correctly manage files with problematic lines"
+    echo "So if you have ideas, please tell on the github page"
+    echo
+
+    exit 1
+fi
