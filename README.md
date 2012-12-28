@@ -18,9 +18,12 @@ Run `install.sh` and add the printed `alias` line to your .rc file
 Features
 --------
 
-* creation command                         -> In progress
+* creation command                         -> OK, ready for comments
 * share repository between all computers   -> branches named as hostname
-* try to detect "password" stored in files -> Matching some patterns, see in hooks
+* try to detect "password" stored in files -> Matching some patterns, see in hooks, ready for comments
+
+Questions
+---------
 
 * write permissions when pulling ?
 * when to pull for news ?
