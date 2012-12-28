@@ -12,7 +12,7 @@ Setup the following variable in the `install.sh` file if you want to change them
     GYC_WORK_TREE='/'
     GYC_GIT_DIR="${HOME}/.gyc/git_bare"
 
-Run `install.sh` and add the `alias` line to your .rc file
+Run `install.sh` and add the printed `alias` line to your .rc file
 
 
 Features
