@@ -27,4 +27,6 @@ Questions
 
 * write permissions when pulling ?
 * when to pull for news ?
+* Files owned by root
+* No read access on Non-root files -> wicd config files with passwords
 
