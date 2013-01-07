@@ -14,9 +14,22 @@ fi
 # Redirect output to stderr.
 exec 1>&2
 
-# detect if files may contain a password
+
+# preceding pattern end with a new line, or a symbol
+# which means it is not a longer word than the one matched
+NOT_LONGER_WORD_P='$|[^a-zA-Z]'
+
 # match pass passwd password, but not "passed"
-WARNING_PATTERN='[Pp][Aa][Ss][Ss]($|[^a-zA-Z]|([Ww](|[Oo][Rr])[Dd]))'
+PASS_P='[Pp][Aa][Ss][Ss]'
+WORD_P='[Ww](|[Oo][Rr])[Dd]'
+PASSWORD_P="${PASS_P}(${NOT_LONGER_WORD_P}|${WORD_P})"
+
+# Match Key but not keyboard for example
+KEY_P="[Kk][Ee][Yy](${NOT_LONGER_WORD_P})"
+
+
+# detect if files may contain a password
+WARNING_PATTERN="(${PASSWORD_P})|(${KEY_P})"
 files_adding_wrong_pattern=$(git diff-index -G"$WARNING_PATTERN" --exit-code --name-only --cached $against --)
 ret=$?
 
