@@ -15,7 +15,8 @@ fi
 exec 1>&2
 
 # detect if files may contain a password
-WARNING_PATTERN='[Pp][Aa][Ss][Ss](|[Ww](|[Oo][Rr])[Dd])'
+# match pass passwd password, but not "passed"
+WARNING_PATTERN='[Pp][Aa][Ss][Ss]($|[^a-zA-Z]|([Ww](|[Oo][Rr])[Dd]))'
 files_adding_wrong_pattern=$(git diff-index -G"$WARNING_PATTERN" --exit-code --name-only --cached $against --)
 ret=$?
 
