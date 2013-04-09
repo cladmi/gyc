@@ -7,7 +7,8 @@
 SCRIPT_FOLDER="$(dirname $0)"
 
 GYC_WORK_TREE='/'
-GYC_GIT_DIR="${HOME}/.gyc/git_bare"
+GYC_INSTALL="${HOME}/.gyc"
+GYC_GIT_DIR="${GYC_INSTALL}/git_bare"
 
 alias gyc="git --git-dir=${GYC_GIT_DIR} --work-tree=${GYC_WORK_TREE}"
 GYC="git --git-dir=${GYC_GIT_DIR} --work-tree=${GYC_WORK_TREE}"
@@ -63,8 +64,29 @@ __setup_gyc_repository() {
 
 }
 
+#
+# Install monitoring tools
+#
+__install_gyc_monitoring() {
+    # Copy gyc_monitor to installation directory
+    cp "monitoring/gyc_monitor.sh" "${GYC_INSTALL}/gycmonitor"
+    sed -i "s|____BARE____REPOSITORY____|${GYC_GIT_DIR}|" "${GYC_INSTALL}/gycmonitor"
+    sed -i "s|____WORK____TREE____|${GYC_WORK_TREE}|" "${GYC_INSTALL}/gycmonitor"
+    echo -n "Please specify a valid email address: "
+    read email
+    sed -i "s|____MAIL___DESTINATION____|$email|" "${GYC_INSTALL}/gycmonitor"
+
+    echo "You need a valid sendmail installation."
+    echo "To enable gyc monitor, please add the following line to your crontab (using \"crontab -e\"):"
+    echo ""
+    echo "03 00 * * * ${GYC_INSTALL}/gycmonitor"
+    echo ""
+}
+
+
 
 __create_gyc_repository
+__install_gyc_monitoring
 
 echo
 echo 'Add the following alias to your .bashrc/.zshrc/.yourrc file and source it to add alias'
