@@ -14,7 +14,7 @@ gyc="git --git-dir=____BARE____REPOSITORY____ --work-tree=____WORK____TREE____"
 # Check status
 ##################
 $gyc status | grep "^\# Changes" > /dev/null
-if [ "x$?" == "x$0" ]; then
+if [ "x$?" == "x1" ]; then
     echo Nothing changes
     exit 1
 else
