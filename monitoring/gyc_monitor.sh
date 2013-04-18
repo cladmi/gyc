@@ -19,7 +19,7 @@ __gyc_status() {
     while read line; do
         echo $line | grep "modified" > /dev/null
         if [ "x$?" == "x0" ]; then
-            modified_file=$(readlink -f $(echo $line | sed -e "s|\#[ \t]*modified: |$repolocation/|"))
+            modified_file=$(readlink -f $(echo $line | sed -e "s|\#[ \t]*modified: |$(pwd)/|"))
             mf[$count]=$modified_file
             df[$count]=$($gyc diff "$modified_file")
             count=$(( $count + 1 ))
