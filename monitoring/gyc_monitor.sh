@@ -38,6 +38,15 @@ __gyc_status() {
         .left {
             text-align: right;
         }
+        .head {
+            color: blue;
+        }
+        .red {
+            color: red;
+        }
+        .green {
+            color: green;
+        }
         </style>
     </head>
     <body>
@@ -57,7 +66,12 @@ EOF
         for i in $(seq 0 $(( ${#mf[@]} - 1 )) ); do
             echo "        <h3><a name=\"${mf[$i]}\">${mf[$i]}</a></li><h3>" >> $1
             echo "        <pre>" >> $1
-            echo "${df[$i]}" >> $1
+            echo "${df[$i]}" | sed 's|<|\&lt;|g;s|>|\&gt;|g' \
+                | sed 's|^\(--- a.*\)$|<span class="head">\1</span>|' \
+                | sed 's|^\(+++ b.*\)$|<span class="head">\1</span>|' \
+                | sed 's|^\(@@ .*\)$|<span class="head">\1</span>|' \
+                | sed 's|^\(+ .*\)$|<class="green">\1</span>|' \
+                | sed 's|^\(- .*\)$|<class="red">\1</span>|' >> $1
             echo "        </pre>" >> $1
             echo "        <br />" >> $1
             echo "        <div class='left'><a href='#top'>back to top</a></div>" >> $1
