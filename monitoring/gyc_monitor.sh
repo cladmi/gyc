@@ -70,8 +70,8 @@ EOF
                 | sed 's|^\(--- a.*\)$|<span class="head">\1</span>|' \
                 | sed 's|^\(+++ b.*\)$|<span class="head">\1</span>|' \
                 | sed 's|^\(@@ .*\)$|<span class="head">\1</span>|' \
-                | sed 's|^\(+[^+].*\)$|<class="green">\1</span>|' \
-                | sed 's|^\(-[^-].*\)$|<class="red">\1</span>|' >> $1
+                | sed 's|^\(+[^+].*\)$|<span class="green">\1</span>|' \
+                | sed 's|^\(-[^-].*\)$|<span class="red">\1</span>|' >> $1
             echo "        </pre>" >> $1
             echo "        <br />" >> $1
             echo "        <div class='left'><a href='#top'>back to top</a></div>" >> $1
