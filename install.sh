@@ -6,6 +6,7 @@
 # change to the install folder
 SCRIPT_FOLDER="$(dirname $0)"
 
+
 GYC_WORK_TREE='/'
 GYC_GIT_DIR="${HOME}/.gyc/git_bare"
 
@@ -22,12 +23,26 @@ __create_gyc_repository() {
         git_dir  = '${GYC_GIT_DIR}'"
 
     mkdir -p $(dirname ${GYC_GIT_DIR})
-
     if [ -e ${GYC_GIT_DIR} ]; then
         echo "Updating existing repository '${GYC_GIT_DIR}"
     fi
 
     __setup_gyc_repository
+
+}
+
+
+__add_exclude_pattern()  {
+    pattern=$1
+    comment=$2
+    excl_file=$3
+
+    grep -F "$pattern" "$excl_file"  | grep  -v '^ *#'
+    if [ $? -ne 0 ]; then
+        echo "# $comment"  >> $EXCL
+        echo "$pattern"    >> $EXCL
+    fi
+
 
 }
 
@@ -39,24 +54,19 @@ __setup_gyc_repository() {
 
     # init/reinit repository
     $GYC init > /dev/null
+    # alias to add files
+    #   by default all files are excluded so -f is required to add
+    $GYC config alias.fadd 'add -f'
 
-    # Exclude all files by default
     EXCL=${GYC_GIT_DIR}/info/exclude
-    grep -q '^\*$' $EXCL 2> /dev/null # only * in line
-    if [ $? -ne 0 ]; then
-        echo '# Exclude all files by default, to add files, use "-f"' >> $EXCL
-        echo '*' >> $EXCL
-    fi
+    __add_exclude_pattern  '*'          "Exclude all files by default, to add files, use '-f'"  "${EXCL}"
+    __add_exclude_pattern  '!*.pacnew'  "Include '.pacnew' to show files that need update on archlinux"  "${EXCL}"
 
     # Use hostname as branch name
     $GYC branch | grep -q " ${HOSTNAME}$" 2> /dev/null # test branch exist
     if [ $? -ne 0 ]; then
         $GYC checkout -b ${HOSTNAME} 2>/dev/null
     fi
-
-    # alias to add files
-    #   by default all files are excluded so -f is required to add
-    $GYC config alias.fadd 'add -f'
 
     # Hooks to match files
     cp -r ${SCRIPT_FOLDER}/hooks ${GYC_GIT_DIR}/

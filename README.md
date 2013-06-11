@@ -1,7 +1,30 @@
 Gyc
 ===
 
-Wrapper around `git` to manage system configuration files in a repository.
+Wrapper around `git` to manage system configuration files in GIT repositories.
+
+Two different repositories
+
+User repository
+---------------
+
+To store 'user' configuration, mainly dot files like rc files, no private datas.
+There could be one for each user.
+
+It is meant to be stored on a public repository for sharing with other Linux Users.
+
+Alias: `gyc`
+
+System repository
+-----------------
+
+To store 'system' configuration, like system programs configuration files.
+Run as root with sudo to handle permissions issues.
+There should be one for the all system.
+
+Goal: track the system configuration and permit users to experiment some complex configurations.
+
+Alias: `sgyc`
 
 
 Install
@@ -22,11 +45,4 @@ Features
 * share repository between all computers   -> branches named as hostname
 * try to detect "password" stored in files -> Matching some patterns, see in hooks, ready for comments
 
-Questions
----------
-
-* write permissions when pulling ?
-* when to pull for news ?
-* Files owned by root
-* No read access on Non-root files -> wicd config files with passwords
 
