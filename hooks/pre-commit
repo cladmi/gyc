@@ -14,7 +14,6 @@ fi
 # Redirect output to stderr.
 exec 1>&2
 
-
 # preceding pattern end with a new line, or a symbol
 # which means it is not a longer word than the one matched
 NOT_LONGER_WORD_P='$|[^a-zA-Z]'
@@ -27,31 +26,62 @@ PASSWORD_P="${PASS_P}(${NOT_LONGER_WORD_P}|${WORD_P})"
 # Match Key but not keyboard for example
 KEY_P="[Kk][Ee][Yy](${NOT_LONGER_WORD_P})"
 
-
 # detect if files may contain a password
 WARNING_PATTERN="(${PASSWORD_P})|(${KEY_P})"
-files_adding_wrong_pattern=$(git diff-index -G"$WARNING_PATTERN" --exit-code --name-only --cached $against --)
-ret=$?
 
-if [ $ret != 0 ]; then
-    echo "WARNING:"
-    echo "Following files match case insensitive 'pass|passwd|password':"
-    echo
 
-    for file in "$files_adding_wrong_pattern"; do
-        echo $file
-        grep -n -E $WARNING_PATTERN "$file"
-    done
 
-    echo
-    echo "Added files may contain a cleartext password"
+
+
+check_forbidden_patterns() {
+    PATTERN=$1
+    files_adding_wrong_pattern=$(git diff-index -G"$PATTERN" --exit-code --name-only --cached $against --)
+    ret=$?
+
+    if [ $ret != 0 ]; then
+        echo "WARNING:"
+        echo "Following files match case insensitive 'pass|passwd|password':"
+        echo
+
+        for file in "$files_adding_wrong_pattern"; do
+                echo $file
+                grep -n -E $WARNING_PATTERN "$file"
+        done
+
+        echo
+        echo "Added files may contain a cleartext password"
+    fi
+
+    return $ret
+}
+
+
+check_file_permissions_and_ownage() {
+    ret=0
+    # TODO
+    # other and groups have no read permissions
+    # file not owned by user
+    #  http://www.cyberciti.biz/faq/display-file-or-file-system-status/
+
+    return $ret
+}
+
+
+return_value=0
+
+check_forbidden_patterns "$WARNING_PATTERN"
+return_value=$(( $return_value || $? ))
+check_file_permissions_and_ownage
+return_value=$(( $return_value || $? ))
+
+
+
+if [ $return_value != 0 ]; then
     echo
     echo "Protection can be bypassed by adding"
     echo "    --no-verify    option to commit"
     echo
-    echo "I don't know how to correctly manage files with problematic lines"
-    echo "So if you have ideas, please tell on the github page"
-    echo
-
-    exit 1
 fi
+
+exit $return_value
+
