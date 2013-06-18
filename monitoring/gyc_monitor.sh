@@ -122,7 +122,6 @@ __build_mail_header() {
 ##################
 $gyc status | grep "^\# Changes" > /dev/null
 if [ "x$?" == "x1" ]; then
-    echo Nothing changes
     exit 1
 else
     ###########################################
@@ -133,7 +132,6 @@ else
 
     __build_mail_header $tmp_mail
     __gyc_status $tmp_mail
-    #cat $tmp_mail
     $mailer < /tmp/gyc_monitor_mail
     rm $tmp_mail
 fi
