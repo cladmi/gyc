@@ -19,7 +19,7 @@ __gyc_status() {
     while read line; do
         echo $line | grep "modified" > /dev/null
         if [ "x$?" == "x0" ]; then
-            modified_file=$(readlink -f $(echo $line | sed -e "s|\#[ \t]*modified: |$(pwd)/|"))
+            modified_file=$(readlink -f $(echo $line | sed -e "s|[ \t]*modified:[ \t]*|$(pwd)/|"))
             mf[$count]=$modified_file
             df[$count]=$($gyc diff "$modified_file")
             count=$(( $count + 1 ))
@@ -120,7 +120,7 @@ __build_mail_header() {
 ##################
 # Check status
 ##################
-$gyc status | grep "^\# Changes" > /dev/null
+$gyc status | grep "^Changes not staged" > /dev/null
 if [ "x$?" == "x1" ]; then
     exit 1
 else
